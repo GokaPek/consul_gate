@@ -1,0 +1,23 @@
+server:
+  port: 8282
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.server.AccessLog: DEBUG
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: consul_plan_service # Идентификатор маршрута
+          uri: http://localhost:8080 # Адрес сервиса consul-plan
+          predicates:
+            - Path=/api/account/**,/api/consultations/**,/api/schedules/**,/auth/** # Маршруты для этого сервиса
+          filters:
+            - StripPrefix=1 # Удаляем первый сегмент пути (/api)
+
+        - id: consul_plan_notify_service
+          uri: http://localhost:8181
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - StripPrefix=1
